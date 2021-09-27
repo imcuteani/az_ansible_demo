@@ -11,7 +11,7 @@
      location: "southeast asia"
      tags:
       environment: dev
-      costcenter: 10031
+      costcenter: "10031"
       
    
 
