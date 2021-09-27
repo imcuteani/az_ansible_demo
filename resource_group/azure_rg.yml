@@ -1,0 +1,11 @@
+# Ansible block to create Azure resource group
+---
+- hosts: localhost
+  connection: local
+  collections: 
+  - azure.azcollection
+  tasks:
+  - name: Create Azure resource group
+    azure_rm_resourcegroup:
+     name: "az_ansible_demo_rg"
+     location: "southeast asia"
