@@ -1,0 +1,37 @@
+# Ansible playbook to create AKS cluster on scale
+---
+- name: Create Azure Kuberneter Cluster
+  hosts: localhost
+  connection: local
+  vars: 
+   ssh_key: "{{ssh_key}}"
+   resource_group: "{{resource_group_name}}"
+   location: "southeast asia"
+   aks_name: "{{aks_name}}"
+   username: "{{username}}"
+   client_id: "{{client_id}}"
+   client_secret: "{{client_secret}}"
+  tasks:
+  - name: Create Resource group
+    azure_rm_resourcegroup:
+     name: "{{resource_group_name}}"
+     location: "southeast asia"
+  - name: Create a managed Azure container services (AKS) Cluster
+    azure_rm_aks:
+     name: "{{aks_name}}"
+     location: "southeast asia"
+     resource_group: "{{resource_group_name}}"
+     dns_prefix: "{{aks_name}}"
+     kubernetes_version: "{{aks_version}}"
+     linux_profile:
+      admin_username: "{{admin_username}}"
+      ssh_key: "{{ssh_key}}"
+     service_principal: 
+      client_id: "{{client_id}}"
+      client_secret: "{{client_secret}}"
+     agent_pool_profiles:
+      - name: default
+        count: 2
+        vm_size: Standard_D2_v2
+    tags:
+     environment: dev         
