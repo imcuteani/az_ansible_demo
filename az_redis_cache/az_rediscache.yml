@@ -1,0 +1,4 @@
+#Ansible block for Azure Redis cache
+- name: Create an Azure Redis cache
+  hosts: localhost
+  
