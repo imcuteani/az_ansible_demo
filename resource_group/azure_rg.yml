@@ -9,3 +9,9 @@
     azure_rm_resourcegroup:
      name: "az_ansible_demo_rg"
      location: "southeast asia"
+     tags:
+      environment: dev
+      cost-center: "{{cost-center}}"
+      register: rg
+  - debug: rg   
+
