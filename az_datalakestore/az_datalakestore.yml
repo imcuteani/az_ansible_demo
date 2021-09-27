@@ -1,0 +1,28 @@
+#Ansible block for Azure data lake store Gen2
+---
+- name: Create Azure Data Lake Store Gen2
+  hosts: localhost
+  connection: local
+  vars: 
+    resource_group: "{{ resoure_group_name }}"
+    location: "southeast asia"
+    datalake_store_name: "{{ datalake_store_name }}"
+- name: Create Azure Resource group
+  azure_rm_resourcegroup:
+   name: "{{ resource_group }}"
+   location: "{{ location }}"
+   tags:
+     environment: dev
+- name: Create Azure Data Lake Storage
+  azure_rm_datalakestore:
+   resource_group: "{{ resource_group }}"
+   name: "{{ datalake_store_name }}"
+   location: "{{ location }}"
+   encryption_state: disabled
+   identity: SystemAssigned
+   new_tier: Consumption
+   state: present 
+   tags: 
+    environment: dev
+    costcenter: "12001"
+
