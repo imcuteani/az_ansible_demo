@@ -12,6 +12,6 @@
      tags:
       environment: dev
       cost-center: "{{cost-center}}"
-      register: rg
-  - debug: rg   
+      
+   
 
