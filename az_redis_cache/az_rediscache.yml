@@ -1,4 +1,56 @@
 #Ansible block for Azure Redis cache
 - name: Create an Azure Redis cache
   hosts: localhost
-  
+  vars: 
+   resource_group: "{{ resource_group_name }}"
+   redis_name: "redis{{ resource_group_name }}"
+   location: southeast asia
+  roles: 
+  - azure.azure_preview_modules
+  tasks: 
+  - name: Create azure resource group
+    azure_rm_resourcegroup:
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+  - name: Create Azure cache for redis
+    azure_rm_rediscache:
+     resource_group: "{{ resource_group }}"
+     name: "{{ redis_name }}"
+     sku:
+      name: basic
+      size: C1
+  - name: Wait for redis cache provisioning to complete
+    azure_rm_rediscache_facts:
+     resource_group: "{{ resource_group }}"
+     name: "{{ redis_name }}"
+    register: facts
+    until: "{{ facts.rediscaches[0]['provisioning_state'] == 'Succeeded }}"
+    retries: 100
+    delay: 60
+  - name: Scale Azure Redis cache
+    azure_rm_rediscache:
+     resource_group: "{{ resource_group }}"
+     name: "{{ redis_name }}"
+     sku:
+      name: standard
+      size: C1
+  - name: Wait for Redis to scale up complete
+    azure_rm_rediscache_facts:
+     resource_group: "{{ resource_group }}"
+     name: "{{ redis_name }}"
+    register: facts
+    until: "{{ facts.rediscaches[0]['provisioning_state'] == 'Succeeded }}"
+    retries: 100
+    delay: 60
+  - name: Add Firewall rule
+    azure_rm_rediscachefirewallrule:
+     resource_group: "{{ resource_group }}"
+     cache_name: "{{ redis_name }}"
+     name: rule_1
+     start_ip_address: 192.168.1.1
+     end_ip_address: 192.168.1.4
+  - name: Delete Azure redis cache
+    azure_rm_rediscache:
+     resource_group: "{{ resource_group }}"
+     name: "{{ redis_name }}"
+     state: absent      
