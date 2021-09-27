@@ -1,0 +1,75 @@
+#Ansible block for Azure Key vault
+---
+- hosts: locahost
+  tasks: 
+  - name: Prepare random prefixes
+    set_fact:
+     rpfx: " {{ 1000 | random }}"
+    run_once: yes
+- hosts: localhost
+  vars: 
+   resource_group: "{{ resource_group_name }}"
+   location: southeast asia
+   keyvault_name: keyvault{{rpfx}}
+  roles:
+  - azure.azure_preview_modules
+  tasks:
+  - name: set facts
+    set_fact:
+     object_id: "{{ lookup('env', 'AZURE_OBJECT_ID') }}"
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+  - name: Create a instance of Key vault
+    azure_rm_keyvault: 
+     resource_group: "{{ resource_group }}"
+     vault_name: "{{ keyvault_name }}" 
+     vault_tenant: " {{ azure_tenant }}"
+     enabled_for_deployment: yes
+     sku: 
+      name: standard
+      family: A
+     access_policies: 
+     - object_id: "{{ object_id }}"
+       keys: 
+       - get
+       - list
+       - update
+       - create
+       - import 
+       - delete
+       - recover
+       - backup
+       - restore
+       secrets: 
+       - get 
+       - list
+       - set
+       - delete 
+       - recover
+       - backup
+       - restore
+  - name: Create keyvault key
+    block: 
+    - azure_rm_keyvaultkey:
+      keyvault_uri: https://{{ keyvault_name }}.vault.azure.net
+      key_name: demokey
+      tags:
+       testing: test
+       delete: on-exit
+      register: output
+    - assert: 
+       that: output.changed
+    rescue: 
+    - azure_rm_keyvaultkey:
+       keyvault_url: https://{{ keyvault_name }}.vault.azure.net
+       state: abset
+       key_name: demokey
+  - name: create a keyvault secret  
+    block: 
+     - azure_rm_keyvaultsecret:
+       keyvault_url: https://{{ keyvault_name }}.vault.azure.net
+       secret_name: demoscret
+       secret_value: "{{ secret_value }}"           
+

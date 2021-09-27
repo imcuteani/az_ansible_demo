@@ -1,0 +1,36 @@
+#Ansible block for Azure App service
+---
+- hosts: localhost
+  connection: local
+  vars: 
+    location: southeast asia
+    plan_name: appserviceanidemoplan
+  tasks:
+  - name: Create resource group
+    azure_rm_resourcegroup: 
+      name: "{{ resource_group_name }}"
+      location: "{{ location }}"
+  - name: Create App Service Plan
+    azure_rm_appserviceplan: 
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ plan_name }}"
+      is_linux: true
+      sku: S1
+      number_of_workers: 1
+  - name: Scale up the app service plan
+    azure_rm_appserviceplan:
+     resource_group: "{{ resource_group_name }}"
+     name: "{{ plan_name }}"
+     is_linux : true
+     sku: S2
+     number_of_wrorkers: 1
+  - name: Get facts
+    azure_rm_appserviceplan_facts:
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ plan_name }}"
+    register: output
+  - name: Display facts output
+    debug: 
+      var: output        
+
+      

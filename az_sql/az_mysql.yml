@@ -1,0 +1,39 @@
+#Ansible block for Azure MySQL db
+---
+- hosts: localhost
+  tasks: 
+  - name: Prepare random postfix
+    set_fact:
+     rpfx: "{{ 1000 | random }}"
+    run_once: yes
+- hosts: localhost
+  vars: 
+   resource_group: "{{ resource_group_name }}"
+   location: southeast asia
+   mysqlserver_name: "{{ mysqlserver_name }}"
+   admin_username: "{{ admin_username }}"
+   admin_password: "{{ admin_password }}"
+  tasks: 
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+  - name: Create MySQL server
+    azure_rm_mysqlserver:
+     name: "{{ mysqlserver_name }}"
+     resource_group: "{{ resource_group }}"
+     sku: 
+      name: GP_Gen4_2
+      tier: GeneralPurpose
+     location: "{{ location }}"
+     version: 5.6
+     enforce_ssl: true
+     admin_username: "{{ admin_username }}"
+     admin_password: "{{ admin_password }}"
+     storage_mb: 51200
+  - name: Create instance of MySQL database
+    azure_rm_mysqldatabse:
+     resource_group: "{{ resource_group }}"
+     server_name: "{{ mysqlserver_name }}"
+     name: "{{ mysqldb_name }}" 
+

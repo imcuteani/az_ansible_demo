@@ -1,0 +1,40 @@
+#Ansible resource block for postgres SQL
+---
+- hosts: localhost
+  tasks: 
+  - name: Prepare random postfix
+    set_fact:
+     rpfx: "{{ 1000 | random }}"
+    run_once: yes
+- hosts: locahost
+  vars: 
+   resource_group: "{{ resource_group_name }}"
+   location: "southeast asia"
+   postgressqlserver_name: postgressqldemo{{repx}}
+   postgressqldb_name: "{{postgresdb_name }}"
+   admin_username: "{{ admin_username }}"
+   admin_password: "{{ admin_password }}"
+  tasks: 
+  - name: Create a resource group
+    azure_rm_resourcegroup: 
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+  - name: Create PostgresSQL server
+    azure_rm_postgressqlserver:
+     resource_group: "{{ resource_group }}"
+     name: "{{ postgressqlserver_name }}"
+     sku:
+      name: B_Gen5_1
+      tier: Basic
+      capacity: 1
+     location: "{{ location }}"
+     enforce_ssl: true
+     admin_username: "{{ admin_username }}"
+     admin_password: "{{ admin_password }}"
+     storage_mb: 51200
+  - name:
+    azure_rm_postgressqldatabase:
+     resource_group: "{{ resource_group }}"
+     server_name: "{{ postgressqlserver_name }}"
+     name: "{{ postgressqldb_name }}"        
+    
