@@ -11,7 +11,7 @@
      location: "southeast asia"
      tags:
       environment: dev
-      cost-center: "{{cost-center}}"
+      costcenter: 10031
       
    
 
