@@ -10,21 +10,22 @@
    kind: "StorageV2"
    minimum_tls_version: "TLS1_2"
    account_type: "Standard_LRS"
-- name: Create a resource group
-  azure_rm_resourcegroup:
-   name: "{{ resource_group }}"
-   location: "{{ location }}"
-   tags: 
-    environment: dev
-- name: Create a storage account
-  azure_rm_storageaccount:
-   name: "{{ storage_account_name }}"
-   kind: "{{ kind }}"
-   minimum_tls_version: "{{ minimum_tls_version }}"
-   resource_group: "{{ resource_group }}"
-   account_type: "{{account_type }}"
-   state: present 
-   https_only: true
+  tasks:  
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+     tags: 
+      environment: dev
+  - name: Create a storage account
+    azure_rm_storageaccount:
+     name: "{{ storage_account_name }}"
+     kind: "{{ kind }}"
+     minimum_tls_version: "{{ minimum_tls_version }}"
+     resource_group: "{{ resource_group }}"
+     account_type: "{{account_type }}"
+     state: present 
+     https_only: true
 
 
 

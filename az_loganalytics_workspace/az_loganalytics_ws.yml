@@ -1,0 +1,22 @@
+#Ansible block for Azure Log analytics workspace
+---
+- name: Create Azure Log Analytics workspace
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: "{{ resource_group_name }}"
+    location: "{{ location }}"
+    workspace_name: "{{ workspace_name }}"
+  tasks:  
+  - name: Create Azure Resource group
+    azure_rm_resourcegroup:
+     name: "{{ resource_group }}"
+     location: "{{ location }}"
+     tags: 
+      environment: dev
+      costcenter: "10021"
+  - name: Create Azure Log Analytics Workspace
+    azure_rm_loganalytics_workspace:
+     resource_group: "{{ resource_group }}"
+     name: "{{ workspace_name }}"
+     location: "{{ location }}"              
