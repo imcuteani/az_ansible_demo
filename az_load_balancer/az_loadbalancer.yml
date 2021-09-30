@@ -1,0 +1,47 @@
+#Ansible resource block for Azure Load Balancer
+---
+- name: Create Azure Load Balancer 
+  hosts: localhost
+  connection: local
+  vars: 
+   resource_group: "{{ resource_group }}"
+   location: "{{ location }}"
+   load_balancer_name: "{{ load_balancer_name }}"
+  tasks:
+  - name: Create Azure Resource group
+    azure_rm_resourcegroup: 
+      resource_group: "{{ resource_group_name }}"
+      location: "{{ location }}"
+      tags: 
+       environment: dev
+       costcenter: "12202"
+  - name: Create Azure Load Balancer
+    azure_rm_loadbalancer:
+     load_balancer_name: "{{ load_balancer_name }}"
+     location: "{{ location }}"
+     resource_group: "{{ resource_group }}"
+     probes:
+     - name: prob_0
+       port: 80
+     inbound_nat_pools: 
+     - name: inboundnatpool_0
+       frontend_ip_configuration_name: frontend_ip_config_1
+       protocol: Tcp
+       frontend_port_range_start: 80
+       frontend_port_range_end: 81
+       backend_port: 8080
+    load_balancing_rules:
+     - name: load_balancing_rule_0
+       frontend_ip_configuration: frontend_ip_config_0
+       backend_address_pool: backend_addr_pool_0
+       frontend_port: 80
+       backend_port: 80
+       probe: prob_0
+    inbound_nat_rules:
+    - name: inbound_rule_0
+      backend_port: 8080
+      protocol: Tcp
+      frontend_port: 8080
+      frontend_ip_configuration: frontend_ip_conf_0     
+
+

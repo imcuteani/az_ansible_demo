@@ -1,0 +1,25 @@
+# Ansible block for Azure Recovery Vault
+---
+- name: Create Azure Recovery Services Vault
+  hosts: localhost
+  connection: local
+  vars: 
+   resource_group: "{{ resource_group_name }}"
+   location: "{{ location }}"
+   asr_vault_name: "{{ asr_vault_name }}"
+  tasks:
+  - name: Create Azure Resource group
+    azure_rm_resourcegroup:
+     resource_group: "{{ resource_group }}"
+     location: "{{ location }}"
+     tags: 
+      environment: dev
+  - name: Create Azure Resource Services Vault
+    azure_rm_recoveryservicesvault:
+     resource_group: "{{ resource_group }}"
+     asr_vault_name: "{{ asr_vault_name }}"
+     location: "{{ location }}"
+     state: present
+
+     
+    
